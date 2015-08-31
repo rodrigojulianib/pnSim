@@ -31,9 +31,17 @@
 		<Compiler>
 			<Add option="-Wall" />
 		</Compiler>
+		<Unit filename="cpnsim.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="cpnsim.h" />
 		<Unit filename="main.c">
 			<Option compilerVar="CC" />
 		</Unit>
+		<Unit filename="matrix.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="matrix.h" />
 		<Extensions>
 			<code_completion />
 			<envvars />

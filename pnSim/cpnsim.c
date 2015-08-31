@@ -8,6 +8,7 @@ int ntokensok(Matrix* m){
     return enabled;
 }
 
+
 void definedTransitionSim(PetriNet *p){
 
     //Verifica na rede trasicoes habilitadas
@@ -145,6 +146,7 @@ void stepByStepSim(PetriNet *p, int steps){
 }
 
 
+
 void fastFowardSim(PetriNet *p, int steps){
     //Verifica na rede trasicoes habilitadas
     //int curStep = 0;
@@ -225,64 +227,47 @@ void fastFowardSim(PetriNet *p, int steps){
     printf("It took me %d clicks (%f seconds).\n",t,((float)t)/CLOCKS_PER_SEC);
 
 }
-/*void stepByStepSim(int col, Matrix pre, Matrix post, Matrix m, Matrix c, int steps){
-    int i;
-    Matrix trHab;
+
+
+/*E definido conflito sempre que exitir uma transicao concorrente a outra onde
+elas depedem de um mesmo lugar para serem disparadas. Se um lugar entra em duas
+transicoes ou mais, existe um conflito*/
+void conflicts(PetriNet *p, Matrix *mconflit){
     Matrix aux;
-    Matrix nm;
-    Matrix preLine;
-    Matrix idTrHab;
-    int e;
-    int opt;
-    int curStep = 0;
+    Matrix vectorAux;
+    int i, j;
 
-    initializeMatrix(&trHab, 1, col);
-
-
-    clock_t t;
-    t = clock();
-    for(i=0; i<col; i++){
-        colToVector(&pre, i, &preLine);
-        equalGreaterMatrix(&m, &preLine, &aux);
-        trHab.m[0][i] = ntokensok(&aux);
+    initializeMatrix(&aux, p->pre.row, p->pre.col);
+    for(i = 0; i<aux.row; i++){
+        for(j=0; j<aux.col; j++){
+            aux.m[i][j] = p->pre.m[i][j];
+        }
     }
+    showMatrix(&aux);
 
-    printf("Transicoes habilitadas para Marcacao inicial:");
-    showMatrix(&trHab);
+    normMatrix(&aux);
 
-    findInMatrixId(&trHab, 1, &idTrHab);
-    printf("\n");
-    //getchar();
-    showMatrix(&idTrHab);
-    printf("\n");
-    while(findInMatrix(&trHab, 1) && curStep<steps){
-        curStep++;
-        e = round(((idTrHab.col-1) * rand()));
+    initializeMatrix(mconflit, aux.col, aux.col);
 
-        opt = idTrHab.m[0][e];
-
-        aux.row = m.row;
-        aux.col = m.col;
-        aux.m[0] = c.m[opt];
-        sumMatrix(&m, &aux, &nm);
-        m = nm;
-
-        for(i=0; i<col; i++){
-            colToVector(&pre, i, &preLine);
-            equalGreaterMatrix(&m, &preLine, &aux);
-            trHab.m[0][i] = ntokensok(&aux);
+    for(i=0; i<mconflit->row; i++){
+        for(j=0; j<mconflit->col; j++){
+            if(i == j)
+                mconflit->m[i][j] = SELF;
+            else
+                mconflit->m[i][j] = compareTransConfli(&aux, i, j);
         }
 
-        printf("Marcacao atual:\n");
-        showMatrix(&m);
-        printf("\npasso: %d\n", curStep);
-        findInMatrixId(&trHab, 1, &idTrHab);
-
     }
-    printf("\nNão existem mais transições habilitadas");
-    printf("Simulação concluida em %d passos\n", curStep);
+    showMatrix(mconflit);
 
-    t = clock() - t;
-    printf("It took me %d clicks (%f seconds).\n",t,((float)t)/CLOCKS_PER_SEC);
-}*/
+}
 
+int compareTransConfli(Matrix *m, int a, int b){
+    int i;
+    for(i=0; i<m->row; i++){
+        if(m->m[i][a]==1 && m->m[i][a]==m->m[i][b]){
+            return CONFLIC;
+        }
+    }
+    return PARALEL;
+}

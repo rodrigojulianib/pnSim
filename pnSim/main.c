@@ -10,13 +10,10 @@ int main()
     PetriNet p;
     Matrix pre;
     Matrix post;
-    //Matrix c;
     Matrix m;
+    Matrix test;
     int op;
-    //int col;
 
-    /* Inicializa Matrizes */
-    //Load matrix from file
     loadMatrix(&pre, "preMatrix.txt");
 
     printf("\nPre matrix:\n");
@@ -28,7 +25,6 @@ int main()
     showMatrix(&post);
     printf("\n\n");
 
-    //subMatrix(&post, &pre, &c);
 
     loadMatrix(&m, "mMatrix.txt");
 
@@ -36,21 +32,17 @@ int main()
     showMatrix(&m);
     printf("\n\n");
 
-    /* Inicializa Matrizes */
+
+    p.m = m;
+    p.post = post;
+    p.pre = pre;
+    p.steps = 0;
 
 
-    /* Inicializa uma PetriNet */
-        p.m = m;
-        p.post = post;
-        p.pre = pre;
-        p.steps = 0;
-    /* Inicializa uma PetriNet */
-
-
-    /* Escolhe tipo de simulacao */
-
-
-//    col = pre.col;
+    /*debug*/
+    system("cls");
+    conflicts(&p, &test);
+    exit(0);
 
     printf("###################################\n");
     printf("                MENU               \n");
@@ -68,14 +60,11 @@ int main()
         switch (op){
             case 1:
                 definedTransitionSim(&p);
-                //definedTransitionSim(col, pre, post, m, c);
                 break;
             case 2:
-                //stepByStepSim(col, pre, post, m, c, steps);
                 stepByStepSim(&p, -1);
                 break;
             case 3:
-                //fastFowrdSim();
                 fastFowardSim(&p, -1);
                 break;
             case 4:
@@ -86,7 +75,7 @@ int main()
                 break;
             }
     }while(op<1 || op>4);
+
     system("pause");
     return 0;
 }
-    /* Escolhe tipo de simulacao */

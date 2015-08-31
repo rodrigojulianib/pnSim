@@ -225,6 +225,17 @@ void colToVector(Matrix* a, int col, Matrix* vecta){
     }
 }
 
+void normMatrix(Matrix *m){
+    int i, j;
+    for(i=0; i<m->row; i++){
+        for(j=0; j<m->col; j++){
+            if(m->m[i][j] > 0)
+                m->m[i][j] /= m->m[i][j];
+            else if(m->m[i][j]<0)
+                m->m[i][j] /= -m->m[i][j];
+        }
+    }
+}
 
 //free
 /*for (i = 0; i < cols; i++)

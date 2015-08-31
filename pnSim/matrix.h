@@ -56,4 +56,7 @@ void loadMatrix(Matrix *m, char* path);
 
 //save vector of index of value determined;
 void findInMatrixId(Matrix *a, int value, Matrix *b);
+
+//normalize matrix;
+void normMatrix(Matrix *m);
 #endif // MATRIX_H_INCLUDED
