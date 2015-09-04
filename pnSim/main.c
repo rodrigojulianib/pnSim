@@ -41,7 +41,8 @@ int main()
 
     /*debug*/
     system("cls");
-    conflicts(&p, &test);
+    sinc(&p, &test);
+    showMatrix(&test);
     exit(0);
 
     printf("###################################\n");

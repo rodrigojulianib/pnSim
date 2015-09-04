@@ -121,7 +121,10 @@ void showMatrix(Matrix *m){
     for(i=0; i<m->row; i++){
         printf("| ");
         for(j=0; j<m->col; j++){
-            printf("%d ", m->m[i][j]);
+            if(m->m[i][j]>=0)
+                printf("%3d ", m->m[i][j]);
+            else
+                printf("%3d ", m->m[i][j]);
         }
         printf("|\n");
     }

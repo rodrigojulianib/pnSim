@@ -229,12 +229,22 @@ void fastFowardSim(PetriNet *p, int steps){
 }
 
 
-/*E definido conflito sempre que exitir uma transicao concorrente a outra onde
-elas depedem de um mesmo lugar para serem disparadas. Se um lugar entra em duas
-transicoes ou mais, existe um conflito*/
-void conflicts(PetriNet *p, Matrix *mconflit){
+int verifyTransSinc(Matrix *m, int a){
+    int i;
+    int flag = 0;
+    for(i=0; i<m->row; i++){
+        if(m->m[i][a] == 1){
+            if(flag){
+                return SINC;
+            }
+            flag++;
+        }
+    }
+    return PARALEL;
+}
+
+void sinc(PetriNet *p, Matrix *mconflit){
     Matrix aux;
-    Matrix vectorAux;
     int i, j;
 
     initializeMatrix(&aux, p->pre.row, p->pre.col);
@@ -243,7 +253,41 @@ void conflicts(PetriNet *p, Matrix *mconflit){
             aux.m[i][j] = p->pre.m[i][j];
         }
     }
-    showMatrix(&aux);
+
+    normMatrix(&aux);
+
+    initializeMatrix(mconflit, 1, aux.col);
+
+    for(i=0; i<mconflit->col; i++){
+        mconflit->m[0][i] = verifyTransSinc(&aux, i);
+    }
+    //showMatrix(mconflit);
+
+}
+
+
+
+
+int compareTransConcurrence(Matrix *m, int a, int b){
+    int i;
+    for(i=0; i<m->row; i++){
+        if(m->m[i][a]==1 && m->m[i][a]==m->m[i][b]){
+            return CONCUR;
+        }
+    }
+    return PARALEL;
+}
+
+void concurrence(PetriNet *p, Matrix *mconflit){
+    Matrix aux;
+    int i, j;
+
+    initializeMatrix(&aux, p->pre.row, p->pre.col);
+    for(i = 0; i<aux.row; i++){
+        for(j=0; j<aux.col; j++){
+            aux.m[i][j] = p->pre.m[i][j];
+        }
+    }
 
     normMatrix(&aux);
 
@@ -254,20 +298,56 @@ void conflicts(PetriNet *p, Matrix *mconflit){
             if(i == j)
                 mconflit->m[i][j] = SELF;
             else
-                mconflit->m[i][j] = compareTransConfli(&aux, i, j);
+                mconflit->m[i][j] = compareTransConcurrence(&aux, i, j);
         }
 
     }
-    showMatrix(mconflit);
+    //showMatrix(mconflit);
 
 }
 
-int compareTransConfli(Matrix *m, int a, int b){
+
+
+int compareTransSequence(Matrix *m, int a, int b){
     int i;
     for(i=0; i<m->row; i++){
-        if(m->m[i][a]==1 && m->m[i][a]==m->m[i][b]){
-            return CONFLIC;
+        if(m->m[i][a]!=0 && m->m[i][a]== - m->m[i][b]){
+            return SEQUEN;
         }
     }
     return PARALEL;
+}
+
+
+void sequence(PetriNet *p, Matrix *mconflit){
+    Matrix aux;
+    int i, j;
+
+    subMatrix(&p->post, &p->pre, &aux);
+    normMatrix(&aux);
+
+    initializeMatrix(mconflit, aux.col, aux.col);
+
+    for(i=0; i<mconflit->row; i++){
+        for(j=0; j<mconflit->col; j++){
+            if(i == j)
+                mconflit->m[i][j] = SELF;
+            else
+                mconflit->m[i][j] = compareTransSequence(&aux, i, j);
+        }
+
+    }
+    //showMatrix(mconflit);
+}
+
+void conflicts(PetriNet* p, Matrix* mconflit){
+    Matrix a;
+    Matrix b;
+    concurrence(p, &a);
+    //showMatrix(&a);
+    sequence(p, &b);
+    //showMatrix(&b);
+    sumMatrix(&a, &b, mconflit);
+    normMatrix(mconflit);
+    //showMatrix(mconflit);
 }
