@@ -1,2 +1,2 @@
 # pnSim
-A Petri nets simulator developed with C programming language. The simulator is simple: use three matrix of input (matrix pre, post and marcation) and choose the simulation between defined , step-by-step  or fastfoward.
+A Petri net simulator developed with C programming language. The simulator is simple: use three input matrix (matrix pre, post and demarcation) and choose the simulation between "set", "step-by-step" or "fastfoward".
